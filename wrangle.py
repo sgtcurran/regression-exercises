@@ -200,12 +200,12 @@ def corrstatsgraphs(df):
     # Correlation Heatmap with min -1 to max 1 in conjuction with pd.corr 
     plt.figure(figsize=(10, 8)) 
     plt.title("Heatmap", fontsize = 'x-large')
-    sns.heatmap(df.corr()[['churn_Yes']].sort_values(by='churn_Yes', 
+    sns.heatmap(df.corr()[['taxvaluedollarcnt']].sort_values(by='taxvaluedollarcnt', 
     ascending=False), vmin=-1, vmax=1, annot=True, cmap='BrBG'
     )
     # Correlation Heatmap with min -1 to max 1 in conjuction with pd.corr
     plt.figure(figsize=(16,10))
-    df.corr()['churn_Yes'].sort_values(ascending=False).plot(kind='bar', figsize=(20,5), cmap='BrBG'
+    df.corr()['taxvaluedollarcnt'].sort_values(ascending=False).plot(kind='bar', figsize=(20,5), cmap='BrBG'
     )
 
     
@@ -283,7 +283,7 @@ def magic2(edf):
     
     return save
 #%%
-def prep_telco(pdf):
+def prep_zillow(pdf):
     """
     Converts to_numeric, drops rows with NaN values, splits data using sklean.train_test_split, hot encodes with pd.get_dummies(),
     concats dataframe with dummies, drops original dummies, and assigns X, y variables to train, validate, and test.
@@ -385,15 +385,41 @@ def correlation_test(df, target, num_features):
 def X_y(train, validate, test):
 
     # drop target data for X_train and assign target data for y_train
-    X_train = train.drop(columns=['churn_Yes'])
-    y_train = train.churn_Yes
+    X_train = train.drop(columns=['taxvaluedollarcnt'])
+    y_train = train.taxvaluedollarcnt
     # drop target data for X_validate and assign target data for y_validate
-    X_validate = validate.drop(columns=['churn_Yes'])
-    y_validate = validate.churn_Yes
+    X_validate = validate.drop(columns=['taxvaluedollarcnt'])
+    y_validate = validate.taxvaluedollarcnt
     # drop target data for X_test and assign target data for y_test 
-    X_test = test.drop(columns=['churn_Yes'])
-    y_test = test.churn_Yes
+    X_test = test.drop(columns=['taxvaluedollarcnt'])
+    y_test = test.taxvaluedollarcnt
     
     return X_train, y_train, X_validate, y_validate, X_test, y_test
 
 #%%
+def wrangle_grades(df):
+
+    """
+    Read student_grades csv file into a pandas DataFrame,
+    drop student_id column, replace whitespaces with NaN values,
+    drop any rows with Null values, convert all columns to int64,
+    return cleaned student grades DataFrame.
+    """
+    # Acquire data from csv file.
+    grades = pd.read_csv("student_grades.csv")
+    # Replace white space values with NaN values.
+    grades = grades.replace(r"^\s*$", np.nan, regex=True)
+    # Drop all rows with NaN values.
+    df = grades.dropna()
+    # Convert all columns to int64 data types.
+    df = df.astype("int")
+    return df
+#%%
+def X_full_y_full(df):
+    # used to split train to figure out the best imputer method 
+    # drop target data for X_train and assign target data for y_train
+    X_full = df.drop(columns=['id','propertylandusetypeid'], axis=1)
+    y_full = df.drop(columns=['id','propertylandusetypeid'])
+    
+    
+    return X_full, y_full
